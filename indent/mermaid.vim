@@ -1,4 +1,4 @@
-let s:indent_keywords = [
+let s:indent_next_line_keywords = [
       \ '^classDiagram',
       \ '^classDiagram-v2',
       \ '^erDiagram',
@@ -21,7 +21,7 @@ let s:indent_keywords = [
       \ '[^a-z]activate',
       \ ]
 
-let s:deindent_keywords = [
+let s:deindent_current_line_keywords = [
       \ '^\s\+classDiagram',
       \ '^\s\+classDiagram-v2',
       \ '^\s\+erDiagram',
@@ -48,11 +48,11 @@ function! MermaidIndent()
   let line_above = getline(v:lnum - 1)
 
   " TODO don't incorrect indent when has empty lines inside graph
-  if s:matches_any_word_in(current_line, s:deindent_keywords)
+  if s:matches_any_word_in(current_line, s:deindent_current_line_keywords)
     return (indent_level - 1) * sw
   endif
 
-  if s:matches_any_word_in(line_above, s:indent_keywords)
+  if s:matches_any_word_in(line_above, s:indent_next_line_keywords)
     return (indent_level + 1) * sw
   endif
 
