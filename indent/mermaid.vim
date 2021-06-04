@@ -22,6 +22,16 @@ let s:indent_keywords = [
       \ ]
 
 let s:deindent_keywords = [
+      \ '^\s\+classDiagram',
+      \ '^\s\+classDiagram-v2',
+      \ '^\s\+erDiagram',
+      \ '^\s\+gantt',
+      \ '^\s\+graph',
+      \ '^\s\+flowchart',
+      \ '^\s\+pie',
+      \ '^\s\+sequenceDiagram',
+      \ '^\s\+stateDiagram',
+      \ '^\s\+stateDiagram-v2',
       \ '^\s\+end$',
       \ '^\s\+}$',
       \ '^\s\+deactivate$'
