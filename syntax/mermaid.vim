@@ -1,6 +1,6 @@
 setlocal iskeyword+=-
 
-syntax keyword mermaidDiagramType classDiagram classDiagram-v2 erDiagram gantt graph flowchart pie sequenceDiagram stateDiagram stateDiagram-v2
+syntax keyword mermaidDiagramType classDiagram classDiagram-v2 erDiagram gantt graph flowchart pie sequenceDiagram stateDiagram stateDiagram-v2 gitGraph
 syntax match mermaidOperator /\v(-|\<|\>|\+|\||\=)/
 syntax match mermaidComment /\v^(\s?)+\%\%.*$/
 syntax region mermaidString start=/"/ end=/"/ skip=/\\"/
@@ -31,6 +31,9 @@ syntax match mermaidClassFunction /\v\w+\(((\w+|\s+|\~)?,?)+\)/ contains=ALLBUT,
 syntax match mermaidStateFinalKeyword /\[\*\]/
 syntax match mermaidStateKeyword /\v(\s+as[^a-z]|^\s+state)/
 
+syntax match mermaidGitOption /\v^(options|end)/
+syntax match mermaidGitCommands /\v^(commit|branch|merge|reset|checkout)/
+
 " TODO highlight gantt keywords
 
 " TODO improve er operators
@@ -59,3 +62,6 @@ highlight link mermaidStateFinalKeyword Keyword
 highlight link mermaidStateKeyword Keyword
 
 highlight link mermaidErOperator Operator
+
+highlight link mermaidGitOption Keyword
+highlight link mermaidGitCommands Keyword
