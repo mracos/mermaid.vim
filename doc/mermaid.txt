@@ -1,0 +1,71 @@
+*mermaid.txt*  Syntax highlighting and indentation for mermaid diagrams
+
+Author:  https://github.com/mracos
+License: MIT
+
+==============================================================================
+CONTENTS                                                    *mermaid-contents*
+
+  1. Introduction ......................... |mermaid-introduction|
+  2. Filetype detection ................... |mermaid-filetype|
+  3. Indentation .......................... |mermaid-indent|
+  4. Highlight groups ..................... |mermaid-highlight|
+  5. Testing .............................. |mermaid-testing|
+
+==============================================================================
+1. INTRODUCTION                                         *mermaid-introduction*
+
+Syntax highlighting, indentation and filetype support for mermaid diagram
+files. See https://mermaid.js.org for the language itself.
+
+Both `filetype plugin indent on` and `syntax enable` must be active in your
+vimrc; neither is set by the plugin.
+
+==============================================================================
+2. FILETYPE DETECTION                                       *mermaid-filetype*
+
+The `mermaid` filetype is set for `*.mmd`, `*.mermaid` and `*.mm`.
+
+                                                        *g:mermaid_detect_mm*
+`*.mm` is ambiguous: Vim's own runtime maps it to objcpp or nroff, and this
+plugin overrides that. To keep Vim's behaviour instead: >
+    let g:mermaid_detect_mm = 0
+<
+==============================================================================
+3. INDENTATION                                                *mermaid-indent*
+
+'shiftwidth' controls the step. A block is opened by a diagram declaration
+(`graph`, `sequenceDiagram`, ...), by `subgraph`, `loop`, `alt`, `else`,
+`opt`, `par`, `and`, `rect`, `critical`, `option`, `break`, `box`,
+`namespace`, `activate`, and by a `class`/`state`/`namespace` line ending in
+`{`. It is closed by `end`, `}`, `deactivate`, and by the branch keywords
+`else`, `and` and `option`, which close and reopen at the same level.
+
+Typing a diagram declaration on an indented line moves it back to column 0.
+
+Diagrams where indentation carries meaning (`mindmap`, `timeline`, `packet`,
+`sankey-beta`) are never reflowed: `=` leaves them untouched and a new line
+inherits the indent of the line above it.
+
+==============================================================================
+4. HIGHLIGHT GROUPS                                        *mermaid-highlight*
+
+Every group is linked with `highlight default link`, so a colorscheme or your
+vimrc can override any of them: >
+    highlight link mermaidDiagramType Special
+<
+The groups are named after the construct they cover, for example
+`mermaidDiagramType`, `mermaidKeyword`, `mermaidComment`, `mermaidString`,
+`mermaidNodeLabel`, `mermaidGraphOperator`, `mermaidErOperator`,
+`mermaidClassFunction`, `mermaidGanttKeyword`, `mermaidGitCommands`. Run
+`:syntax list` inside a mermaid buffer for the full set.
+
+==============================================================================
+5. TESTING                                                   *mermaid-testing*
+
+The suite runs headlessly against both editors, with no dependencies: >
+    ./test/run.sh                    # vim
+    EDITOR_BIN=nvim ./test/run.sh    # neovim
+    ./test/run.sh indent_spec.vim    # a single spec
+<
+ vim:tw=78:ts=8:ft=help:norl:
