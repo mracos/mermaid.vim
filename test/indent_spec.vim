@@ -55,6 +55,17 @@ function! Test_diagram_declaration_snaps_back_to_column_zero() abort
         \ ['graph TD', '  A --> B', 'sequenceDiagram'])
 endfunction
 
+" `requirement r1 {` and `block:ID` share a keyword with a diagram declaration
+" but open a block inside one, so they must not be pulled to column 0.
+function! Test_block_openers_sharing_a_declaration_keyword() abort
+  call AssertIndent('requirement block',
+        \ ['requirementDiagram', 'requirement r1 {', 'id: 1', '}'],
+        \ ['requirementDiagram', '  requirement r1 {', '    id: 1', '  }'])
+  call AssertIndent('block id',
+        \ ['block-beta', 'block:group', 'a', 'end'],
+        \ ['block-beta', '  block:group', '    a', '  end'])
+endfunction
+
 function! Test_front_matter_is_left_alone() abort
   call AssertIndent('front matter',
         \ ['---', 'title: Demo', '---', 'graph TD', 'A --> B'],
@@ -71,6 +82,14 @@ endfunction
 function! Test_mindmap_indentation_is_preserved() abort
   let l:lines = ['mindmap', '  root', '    child', '      grandchild']
   call AssertIndent('mindmap', l:lines, l:lines)
+endfunction
+
+" Same for every other diagram that nests by indentation.
+function! Test_other_hierarchical_diagrams_are_preserved() abort
+  for l:type in ['ishikawa-beta', 'treemap-beta', 'treeView-beta', 'sankey']
+    let l:lines = [l:type, '  root', '    child', '      leaf']
+    call AssertIndent(l:type, l:lines, l:lines)
+  endfor
 endfunction
 
 function! Test_new_line_after_graph_is_indented() abort

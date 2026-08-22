@@ -10,6 +10,29 @@ function! Test_diagram_types_are_constants() abort
         \ 'quadrantChart', 'mermaidDiagramType')
 endfunction
 
+" The `-beta` suffix was dropped upstream for several types but is still
+" accepted, so both spellings have to highlight.
+function! Test_diagram_types_with_and_without_the_beta_suffix() abort
+  for l:name in ['sankey', 'sankey-beta', 'xychart', 'xychart-beta',
+        \ 'block', 'block-beta', 'packet', 'packet-beta', 'treemap',
+        \ 'treemap-beta', 'architecture', 'architecture-beta',
+        \ 'ishikawa', 'ishikawa-beta', 'requirementDiagram']
+    call AssertSyntax(l:name, [l:name], 1, '\V' . l:name . '\$',
+          \ 'mermaidDiagramType')
+  endfor
+endfunction
+
+" Types added to mermaid after this plugin was first written.
+function! Test_recent_diagram_types() abort
+  for l:name in ['agentflow-beta', 'cynefin-beta', 'eventmodeling', 'kanban',
+        \ 'radar-beta', 'railroad-beta', 'railroad-abnf-beta',
+        \ 'railroad-ebnf-beta', 'railroad-peg-beta', 'swimlane-beta',
+        \ 'treeView-beta', 'usecase-beta', 'venn-beta', 'wardley-beta']
+    call AssertSyntax(l:name, [l:name], 1, '\V' . l:name . '\$',
+          \ 'mermaidDiagramType')
+  endfor
+endfunction
+
 function! Test_direction_after_a_declaration() abort
   call AssertSyntax('direction', ['flowchart LR'], 1, 'LR', 'mermaidDirection')
 endfunction
