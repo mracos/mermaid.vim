@@ -1,0 +1,28 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        editor: [vim, nvim]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install vim
+        if: matrix.editor == 'vim'
+        run: sudo apt-get update && sudo apt-get install -y vim-nox
+
+      - name: Install neovim
+        if: matrix.editor == 'nvim'
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+
+      - run: EDITOR_BIN=${{ matrix.editor }} ./test/run.sh

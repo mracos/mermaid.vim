@@ -1,0 +1,8 @@
+" Minimal rc used by the headless test runner.
+set nocompatible
+set noswapfile nobackup nowritebackup
+set shiftwidth=2 softtabstop=2 expandtab
+set autoindent
+let &runtimepath = expand('<sfile>:p:h:h') . ',' . &runtimepath
+filetype plugin indent on
+syntax enable
