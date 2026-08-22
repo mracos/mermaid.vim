@@ -9,19 +9,10 @@ using [eva01](https://github.com/hachy/eva01.vim) colorscheme
 
 ## Installation
 
-
 ### lazy.nvim
 
 ```lua
 { 'mracos/mermaid.vim', ft = 'mermaid' }
-```
-
-
-
-```lua
-```
-
-
 ```
 
 ## What it covers
