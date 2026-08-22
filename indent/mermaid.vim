@@ -12,12 +12,16 @@ set cpoptions&vim
 
 setlocal indentexpr=MermaidIndent()
 setlocal indentkeys=o,O,!^F,0}
+" Retrigger the indent when one of these is typed. Only the block keywords and
+" the diagram types you would realistically retype mid-buffer are worth the
+" cost; the full type list lives in s:diagram_types below.
 execute 'setlocal indentkeys+=' . join(map([
       \ 'end', 'else', 'and', 'option', 'deactivate',
       \ 'classDiagram', 'classDiagram-v2', 'erDiagram', 'gantt', 'graph',
       \ 'flowchart', 'pie', 'sequenceDiagram', 'stateDiagram',
       \ 'stateDiagram-v2', 'gitGraph', 'journey', 'mindmap', 'timeline',
-      \ 'quadrantChart', 'requirementDiagram',
+      \ 'quadrantChart', 'requirementDiagram', 'kanban', 'block', 'packet',
+      \ 'sankey', 'treemap', 'xychart', 'architecture', 'eventmodeling',
       \ ], {_, v -> '=' . v}), ',')
 
 let b:undo_indent = 'setlocal indentexpr< indentkeys<'
@@ -29,17 +33,28 @@ if exists('*MermaidIndent')
   finish
 endif
 
-" Diagram declarations always live at column 0 and open a block.
+" Diagram declarations always live at column 0 and open a block. Taken from the
+" detector regexes in mermaid's source; several types dropped their `-beta`
+" suffix but still accept it, so both spellings are listed. Longest alternative
+" first, otherwise `>` ends the match at the dash.
 let s:diagram_types =
-      \ '\v^\s*(architecture-beta|block-beta|C4Context|C4Container|C4Component'
-      \ . '|C4Dynamic|C4Deployment|classDiagram-v2|classDiagram|erDiagram'
-      \ . '|flowchart-elk|flowchart|gantt|gitGraph|graph|journey|kanban|mindmap'
-      \ . '|packet-beta|packet|pie|quadrantChart|radar-beta|requirementDiagram'
-      \ . '|sankey-beta|sequenceDiagram|stateDiagram-v2|stateDiagram|timeline'
-      \ . '|treemap-beta|usecase-beta|xychart-beta|zenuml)>'
+      \ '\v^\s*(agentflow-beta|architecture-beta|architecture|block-beta|block'
+      \ . '|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment'
+      \ . '|classDiagram-v2|classDiagram|cynefin-beta|erDiagram|eventmodeling'
+      \ . '|flowchart-elk|flowchart|gantt|gitGraph|graph|info|ishikawa-beta'
+      \ . '|ishikawa|journey|kanban|mindmap|packet-beta|packet|pie|quadrantChart'
+      \ . '|radar-beta|railroad-abnf-beta|railroad-ebnf-beta|railroad-peg-beta'
+      \ . '|railroad-beta|requirementDiagram|requirement|sankey-beta|sankey'
+      \ . '|sequenceDiagram|stateDiagram-v2|stateDiagram|swimlane-beta|timeline'
+      \ . '|treemap-beta|treemap|treeView-beta|usecase-beta|venn-beta'
+      \ . '|wardley-beta|xychart-beta|xychart|zenuml)>'
 
-" Diagrams where indentation is data, not style: never reflow them.
-let s:freeform_types = '\v^\s*(mindmap|sankey-beta|packet|packet-beta|timeline)>'
+" Diagrams where indentation is the diagram itself, not style: mindmap,
+" ishikawa, treemap and treeView nest by indent, and sankey (CSV) and packet
+" gain nothing from being reflowed. Never touch any of them.
+let s:freeform_types =
+      \ '\v^\s*(mindmap|ishikawa-beta|ishikawa|treemap-beta|treemap'
+      \ . '|treeView-beta|sankey-beta|sankey|packet-beta|packet|timeline)>'
 
 " Keywords that open a block on the *following* line.
 let s:open_keywords =
@@ -92,8 +107,10 @@ endfunction
 function! MermaidIndent() abort
   let l:current = s:strip(getline(v:lnum))
 
-  " Typing a diagram declaration anywhere snaps it back to column 0.
-  if l:current =~# s:diagram_types
+  " Typing a diagram declaration anywhere snaps it back to column 0. `block:ID`
+  " and `requirement r1 {` share their keyword with a declaration but open a
+  " block inside one, so a trailing `:` or `{` rules the line out.
+  if l:current =~# s:diagram_types && l:current !~# '\v[:{]'
     return 0
   endif
 
