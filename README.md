@@ -9,43 +9,38 @@ using [eva01](https://github.com/hachy/eva01.vim) colorscheme
 
 ## Installation
 
-Both `filetype plugin indent on` and `syntax enable` need to be in your vimrc;
-the plugin does not set them for you.
-
-### vim-plug
-
-1. Add `Plug 'mracos/mermaid.vim'`
-2. Run `:PlugInstall`
-
-### Vundle
-
-1. Add `Plugin 'mracos/mermaid.vim'`
-2. Run `:PluginInstall`
 
 ### lazy.nvim
 
 ```lua
-{ 'mracos/mermaid.vim' }
+{ 'mracos/mermaid.vim', ft = 'mermaid' }
 ```
 
-### Built-in package manager
 
-```sh
-git clone https://github.com/mracos/mermaid.vim \
-  ~/.vim/pack/plugins/start/mermaid.vim
+
+```lua
+```
+
+
 ```
 
 ## What it covers
 
-- Flowchart/graph, sequence, class, state, ER, gantt, pie, journey, gitGraph,
-  requirement, quadrant, mindmap, timeline and the `-beta` diagram types
+- Every diagram type mermaid currently detects, taken from the detector
+  regexes in its source rather than its docs site: flowchart, sequence, class,
+  state, ER, gantt, pie, journey, gitGraph, requirement, quadrant, mindmap,
+  timeline, kanban, C4, sankey, xychart, block, packet, treemap, treeView,
+  radar, architecture, eventmodeling, ishikawa, venn, wardley, cynefin,
+  swimlane, usecase, agentflow and railroad. Types that dropped their `-beta`
+  suffix are recognised with and without it
 - YAML front matter and `%%{init: ...}%%` directives
 - Node shapes and link labels, sequence and class operators, ER cardinality,
   gantt dates and task tags, gitGraph attributes
 - Indentation for blocks, with `else`/`and`/`option` kept at the level of the
   branch they belong to, and blank lines no longer resetting the level
-- `mindmap`/`timeline`/`packet`/`sankey-beta`, where indentation is the
-  diagram's data, are left untouched by `=`
+- Diagrams whose indentation is the diagram itself (`mindmap`, `ishikawa`,
+  `treemap`, `treeView`) or where reflowing buys nothing (`sankey`, `packet`,
+  `timeline`) are left untouched by `=`
 
 See `:help mermaid` for the details, including `g:mermaid_detect_mm` for the
 `*.mm` extension, which vim otherwise maps to objcpp/nroff.

@@ -8,9 +8,10 @@ CONTENTS                                                    *mermaid-contents*
 
   1. Introduction ......................... |mermaid-introduction|
   2. Filetype detection ................... |mermaid-filetype|
-  3. Indentation .......................... |mermaid-indent|
-  4. Highlight groups ..................... |mermaid-highlight|
-  5. Testing .............................. |mermaid-testing|
+  3. Diagram types ........................ |mermaid-diagram-types|
+  4. Indentation .......................... |mermaid-indent|
+  5. Highlight groups ..................... |mermaid-highlight|
+  6. Testing .............................. |mermaid-testing|
 
 ==============================================================================
 1. INTRODUCTION                                         *mermaid-introduction*
@@ -32,7 +33,36 @@ plugin overrides that. To keep Vim's behaviour instead: >
     let g:mermaid_detect_mm = 0
 <
 ==============================================================================
-3. INDENTATION                                                *mermaid-indent*
+3. DIAGRAM TYPES                                       *mermaid-diagram-types*
+
+The recognised openers are taken from the detector regexes in mermaid's own
+source rather than from its documentation site, which lags behind:
+>
+    agentflow-beta      gitGraph            railroad-peg-beta
+    architecture        graph               requirementDiagram
+    block               info                sankey
+    C4Component         ishikawa            sequenceDiagram
+    C4Container         journey             stateDiagram
+    C4Context           kanban              stateDiagram-v2
+    C4Deployment        mindmap             swimlane-beta
+    C4Dynamic           packet              timeline
+    classDiagram        pie                 treemap
+    classDiagram-v2     quadrantChart       treeView-beta
+    cynefin-beta        radar-beta          usecase-beta
+    erDiagram           railroad-beta       venn-beta
+    eventmodeling       railroad-abnf-beta  wardley-beta
+    flowchart           railroad-ebnf-beta  xychart
+    flowchart-elk       gantt               zenuml
+<
+Several types dropped their `-beta` suffix upstream but still accept it, so
+both spellings are recognised: `architecture`, `block`, `ishikawa`, `packet`,
+`sankey`, `treemap` and `xychart`.
+
+Bare `requirement` is a valid opener but is highlighted as a keyword, because
+`requirement r1 {` inside a requirementDiagram is the far more common use.
+
+==============================================================================
+4. INDENTATION                                                *mermaid-indent*
 
 'shiftwidth' controls the step. A block is opened by a diagram declaration
 (`graph`, `sequenceDiagram`, ...), by `subgraph`, `loop`, `alt`, `else`,
@@ -43,12 +73,16 @@ plugin overrides that. To keep Vim's behaviour instead: >
 
 Typing a diagram declaration on an indented line moves it back to column 0.
 
-Diagrams where indentation carries meaning (`mindmap`, `timeline`, `packet`,
-`sankey-beta`) are never reflowed: `=` leaves them untouched and a new line
-inherits the indent of the line above it.
+Diagrams where indentation carries meaning are never reflowed: `=` leaves them
+untouched and a new line inherits the indent of the line above it. That covers
+`mindmap`, `ishikawa`, `treemap` and `treeView-beta`, which nest by indent, and
+`sankey`, `packet` and `timeline`, which gain nothing from being reflowed.
+
+`block:ID` and `requirement r1 {` share their keyword with a diagram
+declaration but open a block inside one, so they are not pulled to column 0.
 
 ==============================================================================
-4. HIGHLIGHT GROUPS                                        *mermaid-highlight*
+5. HIGHLIGHT GROUPS                                        *mermaid-highlight*
 
 Every group is linked with `highlight default link`, so a colorscheme or your
 vimrc can override any of them: >
@@ -61,7 +95,7 @@ The groups are named after the construct they cover, for example
 `:syntax list` inside a mermaid buffer for the full set.
 
 ==============================================================================
-5. TESTING                                                   *mermaid-testing*
+6. TESTING                                                   *mermaid-testing*
 
 The suite runs headlessly against both editors, with no dependencies: >
     ./test/run.sh                    # vim
